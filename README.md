@@ -180,6 +180,25 @@ Copilot が自動的に行ったこと：
   <img src="images/GenerativeTire_render.png" width="60%" alt="ジェネレーティブタイヤ" />
 </p>
 
+### 🐙 Octocat ホイールキャップ
+
+**指示**: *「この画像のOctocatをホイールキャップにして。空洞ではなく白黒の埋め込みで、スナップフィットでホイールに被せられるようにして」*
+
+Copilot が自動的に行ったこと：
+1. 画像からOpenCVで猫シルエットの輪郭を27点に抽出
+2. Fusion 360 でキャップ本体（黒ディスクφ54mm）を作成
+3. 27点フィットポイントスプラインでOctocat輪郭を描画 → 0.3mm浮き出し（白パーツ）
+4. 裏面にスナップフィットリング（爪付き）でホイール外周に嵌め込み可能
+
+<p align="center">
+  <img src="images/octocat_cap_rotation.gif" width="40%" alt="Octocat キャップ 回転" />
+  <img src="images/octocat_cap_front.png" width="40%" alt="Octocat キャップ 正面" />
+</p>
+<p align="center">
+  <img src="images/octocat_cap_isometric.png" width="40%" alt="Octocat キャップ 斜め" />
+  <img src="images/octocat_cap_back.png" width="40%" alt="Octocat キャップ 裏面" />
+</p>
+
 ---
 
 ## 🔧 使えるツール（80 種類）
