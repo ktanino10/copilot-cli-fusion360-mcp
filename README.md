@@ -180,24 +180,34 @@ Copilot が自動的に行ったこと：
   <img src="images/GenerativeTire_render.png" width="60%" alt="ジェネレーティブタイヤ" />
 </p>
 
-### 🐙 Octocat ホイールキャップ
+### 🐙 Octocat ホイールキャップ（高精度版）
 
-**指示**: *「この画像のOctocatをホイールキャップにして。空洞ではなく白黒の埋め込みで、スナップフィットでホイールに被せられるようにして」*
+**指示**: *「この画像のOctocatをホイールキャップにして。空洞ではなく白黒の埋め込みで、スナップフィットでホイールに被せられるようにして」 → 「Octocatが不正確すぎる、もっと高精度で」*
 
-Copilot が自動的に行ったこと：
-1. 画像からOpenCVで猫シルエットの輪郭を27点に抽出
-2. Fusion 360 でキャップ本体（黒ディスクφ54mm）を作成
-3. 27点フィットポイントスプラインでOctocat輪郭を描画 → 0.3mm浮き出し（白パーツ）
-4. 裏面にスナップフィットリング（爪付き）でホイール外周に嵌め込み可能
+**学んだこと**: Fusion 360 MCP の `draw_spline` は 200 点を超えるとフィーチャー生成（押し出し等）が事実上タイムアウトします。10,000 点のスプラインは描画自体は通っても後続処理で不安定に。
 
-<p align="center">
-  <img src="images/octocat_cap_rotation.gif" width="40%" alt="Octocat キャップ 回転" />
-  <img src="images/octocat_cap_front.png" width="40%" alt="Octocat キャップ 正面" />
-</p>
-<p align="center">
-  <img src="images/octocat_cap_isometric.png" width="40%" alt="Octocat キャップ 斜め" />
-  <img src="images/octocat_cap_back.png" width="40%" alt="Octocat キャップ 裏面" />
-</p>
+**そこで採った別アプローチ**：
+1. 公式 GitHub Octocat マーク（560×560 PNG）から OpenCV で **1,072 点**（30 µm 精度）の高精度輪郭を抽出
+2. **Python の `trimesh` + `shapely` で直接ジオメトリを構築** — Fusion 360 のスプライン点数制限を回避
+3. キャップ本体（白プラスチックφ54mm × 1.2mm）+ Octocat 浮き出し（黒、0.3mm）+ スナップフィットリング（内径 52mm、リップ付き）+ M2 ねじ穴 ×3（FS90R 配置と同じ）
+4. **pyrender（EGL ヘッドレス OpenGL）** で物理ベースのレンダリング、36 フレームの回転 GIF を生成
+5. STL を 3 ファイル（黒キャップ・白 Octocat・統合版）出力 → そのまま 3D プリント可能
+
+| 視点 | 画像 |
+|------|------|
+| 上面（Octocat 全体） | <img src="images/octocat_cap_top.png" width="280" /> |
+| 側面（構造が見える） | <img src="images/octocat_cap_side.png" width="280" /> |
+| 斜め（ねじ穴 ×3 確認） | <img src="images/octocat_cap_isometric.png" width="280" /> |
+| 底面（スナップフィットリング） | <img src="images/octocat_cap_bottom.png" width="280" /> |
+| 360° 回転 | <img src="images/octocat_cap_rotation.gif" width="280" /> |
+
+**組み立て方**:
+1. キャップ裏のスナップフィットリング（外径 53mm + 0.5mm リップ）を、FS90R タイヤホイールの外周（φ54mm）に**カチッ**と押し込む
+2. 3 つの M2 ねじ穴（中央 + ±7mm）はホイールハブの取付穴と一致するので、必要ならビスでも固定可能
+
+> 💡 **MCP の限界が見えた瞬間**: 「これは Fusion でやらない方が早い」と判断して `trimesh` に切り替えるのも、CLI 上で対話しながら進められる強みのひとつです。STL は完全水密（watertight）で 3D プリント可能。
+
+成果物: [`octocat_wheel_cap_v3/`](https://github.com/ktanino10/copilot-cli-fusion360-mcp/tree/main/octocat_wheel_cap_v3) に STL・レンダリングコード・ソース画像を収録。
 
 ---
 
