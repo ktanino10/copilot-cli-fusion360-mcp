@@ -1,67 +1,54 @@
-# Fusion 360 × GitHub Copilot CLI 技術デモ動画
+# Robot Arm Demo — Fusion 360 × Copilot CLI (MCP)
 
-GitHub Copilot CLI から **Fusion 360 MCP server** を呼び出し、
-自然言語だけで関節付きロボットアームを構築する様子を見せる **約 4 分の YouTube 向け技術デモ**。
+GitHub Copilot CLI から Fusion 360 MCP server を呼び出して、関節付きロボットアームを構築する技術デモ。
 
-## 含まれるもの
+## 動画
 
-| ファイル | 用途 |
-|---|---|
-| `script_ja.md` | 日本語ナレーション台本（タイムコード付き） |
-| `subtitles_en.srt` | 英語字幕 (SRT) |
-| `shot_list.md` | OBS 録画手順・編集ガイド |
-| `copilot_prompts.md` | 動画中にコピペで打ち込む Copilot CLI プロンプト一覧 |
-| `robot_arm_build.py` | Fusion 360 MCP / Python API 用のバックアップ構築スクリプト |
-| `thumbnail_concept.md` | サムネイル案 |
-| `fusion_artifacts/` | 事前検証で生成済の F3D / STL |
+### ⭐ `fusion_screencast.mp4` — Fusion画面の高密度キャプチャ
+**13秒 / 1080p / 30fps**。MCP コマンドが Fusion 360 のビューポートを動かしている最中に、`Viewport.saveAsImageFile()` で連続キャプチャ (237枚)。各ステップでカメラがゆっくりオービットしながら、新しいパーツが現れる様子を映している。**「Copilot CLI で動かすとこんな感じになります」というイメージを掴むのに使ってください。**
 
-## 撮影〜公開までの流れ
+### 補助動画
+| ファイル | 内容 | 長さ |
+|---|---|---|
+| `demo_video.mp4` | Fusion静止画スライドショー | 24s |
+| `demo_video_split.mp4` | Fusion + 静的ターミナル分割 | 28s |
+| `demo_video_split_v2.mp4` | Fusion + タイプライター式ターミナル | 30s |
 
-1. **準備**
-   - Fusion 360 を起動し、`ファイル > 新規デザイン` で空のアセンブリ系ドキュメントを開く
-   - Fusion360MCP アドインを起動
-   - WSL ターミナルで `copilot` を実行できるようにしておく
-   - OBS シーン `RobotArmDemo` を `shot_list.md` のレイアウトで構成
-2. **リハーサル**
-   - `copilot_prompts.md` の Step 1〜8 を一度通しで流し、Fusion 側の生成結果を確認
-   - 失敗した場合は MCP に「全部消してやり直して」と指示すれば `delete_all` が呼ばれる
-3. **本番録画** — `shot_list.md` のシーン分割で個別ファイル化
-4. **編集** — 5 ファイルを連結 + タイトル + 字幕 (`subtitles_en.srt`) + BGM
-5. **書き出し** — `fusion_copilot_demo.mp4` (1080p/30fps)
-6. **公開** — タイトル例: 「Fusion 360 を会話だけで動かす：GitHub Copilot CLI × MCP」
+> いずれもライブ録画ではなく、Fusion ビューポートのスクショ + Pillow 描画パネルの合成です。
 
-## 仕様（ロボットアーム）
+## 構築するロボットアーム
 
-| 部位 | 形状 | 寸法 (cm) | 位置 (cm) |
+| 部位 | 形状 | 寸法 (cm) | 位置 |
 |---|---|---|---|
 | Base | 円柱 | r=6, h=2 | z=0..2 |
-| YawJoint | 円柱 | r=2.5, h=3 | z=2..5 (軸:Z) |
+| YawJoint | 円柱 | r=2.5, h=3 | z=2..5 |
 | UpperArm | 直方体 | 3×3×12 | 中心 z=11 |
-| ElbowPivot | 円柱 | r=2, h=4 | y=-2..2, z=17 (軸:Y) |
+| ElbowPivot | 円柱 | r=2, h=4 | y=-2..2, z=17 |
 | Forearm | 直方体 | 2.5×2.5×10 | 中心 z=22 |
 | GripperL/R | 直方体 | 0.6×2×3 | x=±1.5, z=28.5 |
 
-## 検証済みエクスポート
-- `fusion_artifacts/robot_arm.f3d` — フルデザイン
-- `fusion_artifacts/robot_arm_upperarm.stl` — 1 ボディ例
+## ファイル構成
 
-## 動画について（重要）
-本リポジトリ同梱の `demo_video*.mp4` は **ライブ画面録画ではなく合成動画** です。
-- **左側 (Fusion 360)**: 本物のビューポートを `Viewport.saveAsImageFile()` で1枚ずつ静止キャプチャしたもの
-- **右側 (ターミナル)**: Pillow で描画したシミュレートパネル（`build_video_v2.py` の `render_terminal()`）
+| ファイル | 用途 |
+|---|---|
+| `fusion_screencast.mp4` | **メイン動画**: Fusion画面のキャプチャ |
+| `rec/` | 上記動画の素材 237 PNG |
+| `build_screencast.py` | スクリーンキャストの動画化スクリプト |
+| `frames/` | スライドショー版の静止素材 31 PNG |
+| `build_video*.py` | 合成動画の生成スクリプト |
+| `robot_arm_build.py` | Fusion 360 Python API 用の参考スクリプト |
+| `copilot_prompts.md` | Copilot CLI に渡すプロンプト例 |
+| `fusion_artifacts/` | 検証エクスポート (F3D / STL) |
 
-| 動画 | 構成 | 長さ |
-|---|---|---|
-| `demo_video.mp4` | Fusionのみ (スライドショー) | 24s |
-| `demo_video_split.mp4` | Fusion + 静的ターミナル分割 | 28s |
-| **`demo_video_split_v2.mp4`** | **Fusion + タイプライター式アニメ ターミナル** | **30s** |
+## 再現手順
 
-本物のリアルタイム画面録画にしたい場合は `shot_list.md` の OBS 手順に従って手動で録画してください。
+1. Fusion 360 を起動 → 新規デザインを開く
+2. Fusion360MCP アドインを起動
+3. WSL ターミナルで `copilot` を起動
+4. `copilot_prompts.md` の Step 1〜6 を順番に投げる
+5. `python3 build_screencast.py` で動画を生成
 
 ## 注意
-- アペアランス (色付け) の MCP API はマテリアルライブラリ未ロード時にエラー (`'NoneType' object has no attribute 'appearances'`) になる。動画ではマテリアルパネルを開いて事前にロードしておくか、色付けは編集時に Fusion 上で手動指定する。
-- STEP エクスポートはコンポーネント単位 (Body 単体不可)。アセンブリ化してから `export_step` を呼ぶと成功する。
-- ジョイント追加 (`add_joint`) はアセンブリ型ドキュメントが必須。Step 7 の前に新規デザインで開き直すこと。
-
-## クレジット
-- ロゴや BGM は YouTube Audio Library など商用利用可能なものに限定する。
+- アペアランス (`set_appearance`) はマテリアルライブラリ未ロード時にエラー
+- STEP エクスポートはコンポーネント単位 (Body 単体不可)
+- ジョイント (`add_joint`) はアセンブリ型ドキュメント必須
