@@ -45,6 +45,19 @@ GitHub Copilot CLI から **Fusion 360 MCP server** を呼び出し、
 - `fusion_artifacts/robot_arm.f3d` — フルデザイン
 - `fusion_artifacts/robot_arm_upperarm.stl` — 1 ボディ例
 
+## 動画について（重要）
+本リポジトリ同梱の `demo_video*.mp4` は **ライブ画面録画ではなく合成動画** です。
+- **左側 (Fusion 360)**: 本物のビューポートを `Viewport.saveAsImageFile()` で1枚ずつ静止キャプチャしたもの
+- **右側 (ターミナル)**: Pillow で描画したシミュレートパネル（`build_video_v2.py` の `render_terminal()`）
+
+| 動画 | 構成 | 長さ |
+|---|---|---|
+| `demo_video.mp4` | Fusionのみ (スライドショー) | 24s |
+| `demo_video_split.mp4` | Fusion + 静的ターミナル分割 | 28s |
+| **`demo_video_split_v2.mp4`** | **Fusion + タイプライター式アニメ ターミナル** | **30s** |
+
+本物のリアルタイム画面録画にしたい場合は `shot_list.md` の OBS 手順に従って手動で録画してください。
+
 ## 注意
 - アペアランス (色付け) の MCP API はマテリアルライブラリ未ロード時にエラー (`'NoneType' object has no attribute 'appearances'`) になる。動画ではマテリアルパネルを開いて事前にロードしておくか、色付けは編集時に Fusion 上で手動指定する。
 - STEP エクスポートはコンポーネント単位 (Body 単体不可)。アセンブリ化してから `export_step` を呼ぶと成功する。
